@@ -7,7 +7,7 @@ networks:
 services:
   ondemeutimejoga:
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     volumes:
       - ..:/workspace:cached
