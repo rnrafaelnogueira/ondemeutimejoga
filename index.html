@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onde meu time joga</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .ad-container {
+            background-color: #e9ecef;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .ad-container.side {
+            height: 100vh;
+            width: 120px;
+            position: fixed;
+            top: 0;
+        }
+        .ad-container.left {
+            left: 0;
+        }
+        .ad-container.right {
+            right: 0;
+        }
+        .filtro {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filtro input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .jogo {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .jogo h2 {
+            margin: 0;
+            color: #555;
+        }
+        .jogo p {
+            margin: 5px 0;
+            color: #777;
+        }
+        .jogo .equipes {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        .jogo .info {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+        .jogo .info div {
+            text-align: center;
+        }
+        .jogo .info div span {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Divs para Google AdSense -->
+    <div class="ad-container side left">AdSense Left</div>
+    <div class="ad-container side right">AdSense Right</div>
+    <div class="ad-container">AdSense Top</div>
+
+    <div class="container">
+        <div class="filtro">
+            <input type="text" id="filtroTime" class="form-control" placeholder="Digite o nome do time...">
+        </div>
+        <h1 class="text-center">Libertadores</h1>
+        <div id="jogos"></div>
+    </div>
+
+    <div class="ad-container">AdSense Bottom</div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        async function fetchJogos(time = '') {
+            try {
+                const url = `http://localhost:8000/futebol/calendario-libertadores?team_name=${time}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                }
+
+                const jogos = await response.json();
+                exibirJogos(jogos);
+            } catch (error) {
+                console.error('Erro ao buscar os jogos:', error);
+            }
+        }
+
+        function exibirJogos(jogos) {
+            const container = document.getElementById('jogos');
+            container.innerHTML = '';
+
+            if (jogos.length === 0) {
+                container.innerHTML = '<p>Nenhum jogo encontrado para este time.</p>';
+                return;
+            }
+
+            jogos.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo';
+
+                jogoDiv.innerHTML = `
+                    <h2>${jogo.Dia} - ${jogo.Fecha}</h2>
+                    <p class="equipes">${jogo.Equipo_A} ${jogo.Versos} ${jogo.Equipo_B}</p>
+                    <div class="info">
+                        <div>
+                            <span>Hora:</span>
+                            <p>${jogo.Hora_BRA}</p>
+                        </div>
+                        <div>
+                            <span>Cidade:</span>
+                            <p>${jogo.Ciudad}</p>
+                        </div>
+                        <div>
+                            <span>Onde assistir:</span>
+                            <p>${jogo.Cable_1}</p>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(jogoDiv);
+            });
+        }
+
+        // Adiciona um evento de input para filtrar automaticamente
+        document.getElementById('filtroTime').addEventListener('input', (event) => {
+            const time = event.target.value.trim();
+            fetchJogos(time);
+        });
+
+        // Carrega todos os jogos ao abrir a página
+        fetchJogos();
+    </script>
+</body>
+</html>

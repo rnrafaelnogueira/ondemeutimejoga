@@ -1,0 +1,8 @@
+# Django e Django REST Framework
+fastapi
+uvicorn
+pymupdf
+pdfplumber
+duckdb
+python-multipart
+fuzzywuzzy

@@ -1,0 +1,15 @@
+version: '3.4'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  ondemeutimejoga:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    networks:
+      - default
