@@ -6,3 +6,4 @@ pdfplumber
 duckdb
 python-multipart
 fuzzywuzzy
+jinja2
