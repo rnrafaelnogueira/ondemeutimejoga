@@ -10,7 +10,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - /certs:/etc/ssl/certs
+      - ./certs:/etc/ssl/certs
     environment:
       - SSL_CERTIFICATE=/etc/ssl/certs/fullchain.pem
       - SSL_CERTIFICATE_KEY=/etc/ssl/certs/privkey.pem
@@ -24,7 +24,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - /certs:/etc/ssl/certs
+      - ./certs:/etc/ssl/certs
     depends_on:
       - ondemeutimejoga
     networks:
