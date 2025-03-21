@@ -28,5 +28,6 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # Copiar o código da aplicação para o container
 COPY . .
 
+EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/certs/privkey.pem", "--ssl-certfile", "/certs/fullchain.pem"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
