@@ -4,7 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI()
+app = FastAPI(
+    docs_url=None,        # Remove o Swagger UI (default: "/docs")
+    redoc_url=None,       # Remove o ReDoc (default: "/redoc")
+    openapi_url=None      # Remove o OpenAPI JSON schema (default: "/openapi.json")
+)
 
 # Configuração do CORS
 app.add_middleware(
