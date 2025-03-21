@@ -9,6 +9,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
     volumes:
       - ./certs:/etc/ssl/certs
     environment:
