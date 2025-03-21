@@ -9,9 +9,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8000:80"
-      - "8000:443"
     volumes:
       - ..:/workspace:cached
       - /certs:/etc/ssl/certs
