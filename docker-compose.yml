@@ -9,7 +9,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - ..:/workspace:cached
+      - /certs:/etc/ssl/certs
+    environment:
+      - SSL_CERTIFICATE=/etc/ssl/certs/fullchain.pem
+      - SSL_CERTIFICATE_KEY=/etc/ssl/certs/privkey.pem
     networks:
       - default
