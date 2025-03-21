@@ -22,6 +22,14 @@ WORKDIR /app
 # Copiar o arquivo requirements.txt para o container
 COPY requirements.txt .
 
+# Copiar os certificados para o contêiner
+COPY /certs/fullchain.pem /etc/ssl/certs/fullchain.pem
+COPY /certs/privkey.pem /etc/ssl/certs/privkey.pem
+
+# Ajustar as permissões dos certificados
+RUN chmod 644 /etc/ssl/certs/fullchain.pem && \
+    chmod 600 /etc/ssl/certs/privkey.pem
+
 # Instalar as dependências
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
