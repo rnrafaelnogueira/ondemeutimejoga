@@ -7,3 +7,4 @@ duckdb
 python-multipart
 fuzzywuzzy
 jinja2
+python-Levenshtein
