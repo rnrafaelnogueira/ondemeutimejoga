@@ -10,8 +10,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:8000"
-      - "443:8000"
+      - "8000:80"
+      - "8000:443"
     volumes:
       - ..:/workspace:cached
       - /certs:/etc/ssl/certs
