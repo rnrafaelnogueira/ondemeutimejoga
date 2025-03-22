@@ -8,6 +8,26 @@ class FutebolBrasileiraoAService:
     def __init__(self, db_path):
         self.db_path = db_path
 
+    # Função para transformar a string
+    def transformar_data(self, data_str):
+        dias_semana = {
+            'dom': 'Domingo',
+            'seg': 'Segunda',
+            'ter': 'Terça',
+            'qua': 'Quarta',
+            'qui': 'Quinta',
+            'sex': 'Sexta',
+            'sáb': 'Sábado'
+        }
+        # Divide a string em data e dia da semana
+        data, dia_abreviado = data_str.split()
+        
+        # Obtém o nome completo do dia da semana
+        dia_completo = dias_semana.get(dia_abreviado, dia_abreviado)  # Usa a abreviação se não encontrar no dicionário
+        
+        # Retorna a string formatada
+        return f"{data} - {dia_completo}"
+
     def extract_data_from_pdf(self, pdf_path) -> List[Dict[str, str]]:
         """Extrai os dados do PDF e retorna uma lista de dicionários."""
         data = []
@@ -113,10 +133,10 @@ class FutebolBrasileiraoAService:
                 if record["Data"]:
                     # Atualiza a última data válida
                     last_data = record["Data"].split("\n")[0]  # Pega a primeira ocorrência da data
-                    record["Data"] = last_data
+                    record["Data"] = self.transformar_data(last_data)
                 else:
                     # Replica a última data válida
-                    record["Data"] = last_data
+                    record["Data"] = self.transformar_data(last_data)
 
                 # Mapeia os canais de TV
                 for tv_key in ["TV_1", "TV_2", "TV_3", "TV_4", "TV_5", "TV_6"]:

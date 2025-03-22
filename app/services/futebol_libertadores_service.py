@@ -9,6 +9,24 @@ class FutebolLibertadoresService:
     def __init__(self, db_path):
         self.db_path = db_path
 
+    # Função para transformar a string
+    def transformar_data(self, data_str):
+        dias_semana = {
+            'DOM': 'Domingo',
+            'SEG': 'Segunda',
+            'TER': 'Terça',
+            'QUA': 'Quarta',
+            'QUI': 'Quinta',
+            'SEX': 'Sexta',
+            'SAB': 'Sábado'
+        }
+        
+        # Obtém o nome completo do dia da semana
+        dia_completo = dias_semana.get(data_str)  # Usa a abreviação se não encontrar no dicionário
+        
+        # Retorna a string formatada
+        return dia_completo
+
     def extract_data_from_pdf(self, pdf_path) -> List[Dict[str, str]]:
         """Extrai os dados do PDF e retorna uma lista de dicionários."""
         data = []
@@ -121,7 +139,7 @@ class FutebolLibertadoresService:
 
                     # Verifica se a data está dentro dos próximos 15 dias
                     if today <= fecha <= fifteen_days_later:
-                        record["Dia"] = record["Dia"].split("/")[1]
+                        record["Dia"] = self.transformar_data(record["Dia"].split("/")[1])
                         if record["Abierta_1"] and record["Cable_1"]:
                             record["Cable_1"] = f"{record['Abierta_1']} / {record['Cable_1']}"
                         elif record["Abierta_1"]:
