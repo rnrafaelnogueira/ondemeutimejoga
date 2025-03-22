@@ -55,6 +55,19 @@
             flex-direction: column;
             align-items: center;
         }
+        .competicao {
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .competicao h1 {
+            align-items: center;
+            text-align: center;
+            margin: 0;
+        }
         .jogo h2 {
             margin: 0;
             color: #555;
@@ -72,7 +85,7 @@
             display: flex;
             justify-content: space-between;
             width: 80%;
-            max-width: 400px;
+            max-width: 500px;
             margin-top: 10px;
         }
         .jogo .info div {
@@ -94,8 +107,8 @@
         <div class="filtro">
             <input type="text" id="filtroTime" class="form-control" placeholder="Digite o nome do time...">
         </div>
-        <h1 class="text-center">Libertadores</h1>
-        <div id="jogos"></div>
+        <div id="jogosBrasileirao"></div>
+        <div id="jogosLibertadores"></div>
     </div>
 
     <div class="ad-container"></div>
@@ -106,7 +119,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        async function fetchJogos(time = '') {
+        async function fetchJogosLibertadores(time = '') {
             try {
                 const url = `https://ondemeutimejoga.com.br/futebol/calendario-libertadores?team_name=${time}`;
 
@@ -121,21 +134,42 @@
                 }
 
                 const jogos = await response.json();
-                exibirJogos(jogos);
+                exibirJogosLibertadores(jogos);
             } catch (error) {
-                console.error('Erro ao buscar os jogos:', error);
+                console.error('Erro ao buscar os jogos da Libertadores:', error);
             }
         }
 
-        function exibirJogos(jogos) {
-            const container = document.getElementById('jogos');
+        async function fetchJogosBrasileirao(time = '') {
+            try {
+                const url = `http://ondemeutimejoga.com.br/futebol/calendario-brasileirao-a?team_name=${time}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                }
+
+                const jogos = await response.json();
+                exibirJogosBrasileirao(jogos);
+            } catch (error) {
+                console.error('Erro ao buscar os jogos do Brasileirão:', error);
+            }
+        }
+
+        function exibirJogosLibertadores(jogos) {
+            const container = document.getElementById('jogosLibertadores');
             container.innerHTML = '';
 
             if (jogos.length === 0) {
-                container.innerHTML = '<p>Nenhum jogo encontrado para este time.</p>';
+                container.innerHTML = '<p>Nenhum jogo encontrado para este time na Libertadores.</p>';
                 return;
             }
-
+            container.innerHTML = '<h1 class="competicao">Libertadores</h1>';
             jogos.forEach(jogo => {
                 const jogoDiv = document.createElement('div');
                 jogoDiv.className = 'jogo';
@@ -147,6 +181,10 @@
                         <div>
                             <span>Hora:</span>
                             <p>${jogo.Hora_BRA}</p>
+                        </div>
+                        <div>
+                            <span>Estádio:</span>
+                            <p>${jogo.Estadio}</p>
                         </div>
                         <div>
                             <span>Cidade:</span>
@@ -163,14 +201,56 @@
             });
         }
 
+        function exibirJogosBrasileirao(jogos) {
+            const container = document.getElementById('jogosBrasileirao');
+            container.innerHTML = '';
+
+            if (jogos.length === 0) {
+                container.innerHTML = '<p>Nenhum jogo encontrado para este time no Brasileirão.</p>';
+                return;
+            }
+            container.innerHTML = '<h1 class="competicao">Brasileirão Série A</h1>';
+            jogos.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo';
+
+                jogoDiv.innerHTML = `
+                    <h2>${jogo.Data}</h2>
+                    <p class="equipes">${jogo.Jogo}</p>
+                    <div class="info">
+                        <div>
+                            <span>Hora:</span>
+                            <p>${jogo.Hora}</p>
+                        </div>
+                        <div>
+                            <span>Estádio:</span>
+                            <p>${jogo.Estadio}</p>
+                        </div>
+                        <div>
+                            <span>Cidade:</span>
+                            <p>${jogo.Cidade}, ${jogo.UF}</p>
+                        </div>
+                        <div>
+                            <span>Onde assistir:</span>
+                            <p>${jogo.TV_1 || jogo.TV_2 || jogo.TV_3 || jogo.TV_4 || jogo.TV_5 || jogo.TV_6 || 'Não disponível'}</p>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(jogoDiv);
+            });
+        }
+
         // Adiciona um evento de input para filtrar automaticamente
         document.getElementById('filtroTime').addEventListener('input', (event) => {
             const time = event.target.value.trim();
-            fetchJogos(time);
+            fetchJogosBrasileirao(time);
+            fetchJogosLibertadores(time);
         });
 
         // Carrega todos os jogos ao abrir a página
-        fetchJogos();
+        fetchJogosBrasileirao();
+        fetchJogosLibertadores();
     </script>
 </body>
 </html>

@@ -1,9 +1,10 @@
 import pdfplumber
 import duckdb
 from typing import List, Dict
-from fuzzywuzzy import fuzz  # Importando a biblioteca para calcular similaridade
+from fuzzywuzzy import fuzz
+from datetime import datetime, timedelta
 
-class FutebolService:
+class FutebolLibertadoresService:
 
     def __init__(self, db_path):
         self.db_path = db_path
@@ -93,6 +94,7 @@ class FutebolService:
         """
         Retorna todos os registros da tabela como uma lista de dicionários.
         Se `team_name` for fornecido, filtra os registros com base na similaridade dos nomes das equipes.
+        Retorna apenas os registros dos próximos 15 dias com base no campo `Fecha`.
         """
         try:
             conn = duckdb.connect(self.db_path)
@@ -108,23 +110,35 @@ class FutebolService:
 
             # Filtra os dados com base na similaridade do nome da equipe, se fornecido
             filtered_data = []
-            if team_name:
-                for record in data:
-                    if record["Equipo_A"] and record["Equipo_B"]:
+            today = datetime.now()
+            fifteen_days_later = today + timedelta(days=15)
+
+            for record in data:
+                if record["Equipo_A"] and record["Equipo_B"]:
+                    # Completa o campo Fecha com o ano atual
+                    fecha_str = record["Fecha"] + f"/{today.year}"
+                    fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
+
+                    # Verifica se a data está dentro dos próximos 15 dias
+                    if today <= fecha <= fifteen_days_later:
                         record["Dia"] = record["Dia"].split("/")[1]
-                        # Calcula a similaridade entre o nome da equipe A e o nome fornecido
-                        similarity_a = fuzz.ratio(record["Equipo_A"].lower(), team_name.lower())
-                        # Calcula a similaridade entre o nome da equipe B e o nome fornecido
-                        similarity_b = fuzz.ratio(record["Equipo_B"].lower(), team_name.lower())
-                        # Se a similaridade for maior ou igual ao limite, adiciona ao resultado filtrado
-                        if similarity_a >= similarity_threshold or similarity_b >= similarity_threshold:
+                        if record["Abierta_1"] and record["Cable_1"]:
+                            record["Cable_1"] = f"{record['Abierta_1']} / {record['Cable_1']}"
+                        elif record["Abierta_1"]:
+                            record["Cable_1"] = record["Abierta_1"]
+                        elif record["Cable_1"]:
+                            record["Cable_1"] = record["Cable_1"]
+                        if team_name:
+                            # Calcula a similaridade entre o nome da equipe A e o nome fornecido
+                            similarity_a = fuzz.ratio(record["Equipo_A"].lower(), team_name.lower())
+                            # Calcula a similaridade entre o nome da equipe B e o nome fornecido
+                            similarity_b = fuzz.ratio(record["Equipo_B"].lower(), team_name.lower())
+                            # Se a similaridade for maior ou igual ao limite, adiciona ao resultado filtrado
+                            if similarity_a >= similarity_threshold or similarity_b >= similarity_threshold:
+                                filtered_data.append(record)
+                        else:
                             filtered_data.append(record)
-                return filtered_data
-            else:
-                for record in data:
-                    if record["Equipo_A"] and record["Equipo_B"]:
-                        record["Dia"] = record["Dia"].split("/")[1]
-                        filtered_data.append(record)
-                return filtered_data
+
+            return filtered_data
         except Exception as e:
             raise Exception(f"Erro ao recuperar dados do DuckDB: {str(e)}")

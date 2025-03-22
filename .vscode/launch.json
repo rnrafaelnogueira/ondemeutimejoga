@@ -5,7 +5,6 @@
             "name": "Server",
             "type": "python",
             "request": "launch",
-            "envFile": "${workspaceFolder}/.devcontainer/.env",
             "program": "/usr/local/bin/uvicorn",
             "args": [
                 "app.main:app",
