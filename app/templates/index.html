@@ -23,11 +23,28 @@
             padding: 20px;
         }
         .ad-container {
-            background-color: #e9ecef;
+            background: #ffffff; /* Fundo totalmente branco */
             height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0; /* Borda cinza bem clara para contorno */
+            border-radius: 10px;
+            color: #333333; /* Texto em cinza escuro para contraste */
+            font-family: 'Poppins', sans-serif; /* Fonte moderna */
+            font-size: 22px; /* Tamanho maior para impacto */
+            font-weight: 600; /* Peso semi-negrito */
+            text-transform: uppercase;
+            letter-spacing: 2px; /* Espaçamento entre letras */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            position: relative;
+            overflow: hidden;
+        }
+        .descricao {
+            text-align: center;
+            font-size: 1em;
+            color: #555;
             margin-bottom: 20px;
         }
         .filtro {
@@ -36,7 +53,7 @@
         }
         .filtro input {
             padding: 10px;
-            font-size: 16px;
+            font-size: 26px;
             width: 100%;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -52,6 +69,7 @@
             align-items: center;
         }
         .competicao {
+            font-size: 1.9em;
             border-radius: 8px;
             margin-bottom: 20px;
             padding: 20px;
@@ -100,9 +118,15 @@
 </head>
 <body>
     <!-- Div para Google AdSense no topo -->
-    <div class="ad-container"></div>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+    <div class="ad-container">ONDE MEU TIME JOGA</div>
 
     <div class="container">
+        <div class="descricao">
+            Este site centraliza informações sobre jogos da Libertadores, Brasileirão e Copa do Brasil.<br>
+            Busque seu time e veja data, horário, local e onde assistir aos jogos.
+        </div>
         <div class="filtro">
             <input type="text" id="filtroTime" class="form-control" placeholder="Digite o nome do time...">
         </div>
