@@ -145,7 +145,7 @@
     <script>
         async function fetchJogosLibertadores(time = '') {
             try {
-                const url = `http://localhost:8000/futebol/calendario-libertadores?team_name=${time}`;
+                const url = `https://ondemeutimejoga.com.br/futebol/calendario-libertadores?team_name=${time}`;
 
                 const response = await fetch(url, {
                     headers: {
@@ -166,7 +166,7 @@
 
         async function fetchJogosBrasileirao(time = '') {
             try {
-                const url = `http://localhost:8000/futebol/calendario-brasileirao-a?team_name=${time}`;
+                const url = `https://ondemeutimejoga.com.br/futebol/calendario-brasileirao-a?team_name=${time}`;
 
                 const response = await fetch(url, {
                     headers: {
