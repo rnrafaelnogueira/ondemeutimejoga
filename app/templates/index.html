@@ -124,7 +124,7 @@
 
     <div class="container">
         <div class="descricao">
-            Este site centraliza informações sobre jogos da Libertadores, Brasileirão, Copa do Brasil e Copa do Nordeste.<br>
+            Este site centraliza informações sobre jogos da Libertadores, Copa Sulamericana, Brasileirão, Copa do Brasil e Copa do Nordeste.<br>
             Busque seu time e veja data, horário, local e onde assistir aos jogos.
         </div>
         <div class="filtro">
@@ -132,6 +132,7 @@
         </div>
         <div id="jogosBrasileirao"></div>
         <div id="jogosLibertadores"></div>
+        <div id="jogosSudamericana"></div>
         <div id="jogosCopaNordeste"></div>
 
     </div>
@@ -146,7 +147,9 @@
 
     <script>
         
-        const url_base = 'https://ondemeutimejoga.com.br' 
+        const url_base = 'https://ondemeutimejoga.com.br'
+        
+        /*const url_base = 'http://localhost:8000'*/
 
         async function fetchJogosLibertadores(time = '') {
             try {
@@ -166,6 +169,27 @@
                 exibirJogosLibertadores(jogos);
             } catch (error) {
                 console.error('Erro ao buscar os jogos da Libertadores:', error);
+            }
+        }
+
+        async function fetchJogosSudamericana(time = '') {
+            try {
+               const url = `${url_base}/futebol/calendario-sudamericana?team_name=${time}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                }
+
+                const jogos = await response.json();
+                exibirJogosSudamericana(jogos);
+            } catch (error) {
+                console.error('Erro ao buscar os jogos da Sudamericana:', error);
             }
         }
 
@@ -219,6 +243,45 @@
                 return;
             }
             container.innerHTML = '<h1 class="competicao">Libertadores</h1>';
+            jogos.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo';
+
+                jogoDiv.innerHTML = `
+                    <h2> ${jogo.Fecha} - ${jogo.Dia}</h2>
+                    <p class="equipes">${jogo.Equipo_A} x ${jogo.Equipo_B}</p>
+                    <div class="info">
+                        <div>
+                            <span>Hora:</span>
+                            <p>${jogo.Hora_BRA}</p>
+                        </div>
+                        <div>
+                            <span>Estádio:</span>
+                            <p>${jogo.Estadio}</p>
+                        </div>
+                        <div>
+                            <span>Cidade:</span>
+                            <p>${jogo.Ciudad}</p>
+                        </div>
+                        <div>
+                            <span>Onde assistir:</span>
+                            <p>${jogo.Cable_1}</p>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(jogoDiv);
+            });
+        }
+
+        function exibirJogosSudamericana(jogos) {
+            const container = document.getElementById('jogosSudamericana');
+            container.innerHTML = '';
+
+            if (jogos.length === 0) {
+                return;
+            }
+            container.innerHTML = '<h1 class="competicao">Copa Sul-Americana</h1>';
             jogos.forEach(jogo => {
                 const jogoDiv = document.createElement('div');
                 jogoDiv.className = 'jogo';
@@ -332,15 +395,17 @@
         document.getElementById('filtroTime').addEventListener('input', (event) => {
             const time = event.target.value.trim();
             fetchJogosCopaNordeste(time);
-
             fetchJogosBrasileirao(time);
             fetchJogosLibertadores(time);
+            fetchJogosSudamericana(time);
+
         });
 
         // Carrega todos os jogos ao abrir a página
         fetchJogosCopaNordeste();
         fetchJogosBrasileirao();
         fetchJogosLibertadores();
+        fetchJogosSudamericana();
     </script>
 </body>
 </html>

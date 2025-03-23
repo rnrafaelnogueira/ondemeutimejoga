@@ -3,8 +3,8 @@ import shutil
 import os
 from app.services.futebol_libertadores_service import FutebolLibertadoresService
 from app.services.futebol_brasileirao_a_service import FutebolBrasileiraoAService
-from app.services.futebol_copa_nordeste import FutebolCopaNordesteService
-
+from app.services.futebol_copa_nordeste_service import FutebolCopaNordesteService
+from app.services.futebol_sudamericana_service import FutebolSudamericanaService
 
 router = APIRouter()
 
@@ -12,6 +12,7 @@ DB_PATH = "futebol.duckdb"
 TABLE_NAME_LIBERTADORES = "calendario_libertadores"
 TABLE_NAME_BRASILEIRAO_A = "calendario_brasileirao_a"
 TABLE_NAME_COPA_NORDESTE = "calendario_copa_nordeste"
+TABLE_NAME_SUDAMERICANA = "calendario_sudamericana"
 
 
 
@@ -123,6 +124,44 @@ def get_calendario_calendario_copa_nordeste(team_name: str = Query(
 
     try:
         data = futebol_service.get_all_texts(TABLE_NAME_COPA_NORDESTE, team_name)
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao recuperar dados: {str(e)}")
+
+
+@router.post("/futebol/add-calendario-sudamericana")
+async def add_calendario_calendario_sudamericana(file: UploadFile = File(...)):
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="O arquivo deve ser um PDF.")
+
+    futebol_service = FutebolSudamericanaService(DB_PATH)
+    file_path = f"temp_{file.filename}"
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        data = futebol_service.extract_data_from_pdf(pdf_path=file_path)
+        futebol_service.save_to_duckdb(TABLE_NAME_SUDAMERICANA, data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao processar o arquivo: {str(e)}")
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    return {"message": "Dados salvos no banco de dados DuckDB com sucesso!"}
+
+@router.get("/futebol/calendario-sudamericana")
+def get_calendario_calendario_sudamericana(team_name: str = Query(
+    ...,
+    title="Digite o nome do seu time",
+    description="Nome do time",
+    example="Fortaleza"
+)):
+    futebol_service = FutebolSudamericanaService(DB_PATH)
+
+    try:
+        data = futebol_service.get_all_texts(TABLE_NAME_SUDAMERICANA, team_name)
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao recuperar dados: {str(e)}")
