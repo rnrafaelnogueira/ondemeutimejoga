@@ -17,7 +17,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif; /* Fonte moderna */
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
@@ -124,7 +124,7 @@
 
     <div class="container">
         <div class="descricao">
-            Este site centraliza informações sobre jogos da Libertadores, Brasileirão e Copa do Brasil.<br>
+            Este site centraliza informações sobre jogos da Libertadores, Brasileirão, Copa do Brasil e Copa do Nordeste.<br>
             Busque seu time e veja data, horário, local e onde assistir aos jogos.
         </div>
         <div class="filtro">
@@ -132,6 +132,8 @@
         </div>
         <div id="jogosBrasileirao"></div>
         <div id="jogosLibertadores"></div>
+        <div id="jogosCopaNordeste"></div>
+
     </div>
 
     <!-- Div para Google AdSense no rodapé -->
@@ -143,9 +145,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        
+        const url_base = 'http://Localhost:8000' 
+
         async function fetchJogosLibertadores(time = '') {
             try {
-                const url = `https://ondemeutimejoga.com.br/futebol/calendario-libertadores?team_name=${time}`;
+               const url = `${url_base}/futebol/calendario-libertadores?team_name=${time}`;
 
                 const response = await fetch(url, {
                     headers: {
@@ -166,7 +171,7 @@
 
         async function fetchJogosBrasileirao(time = '') {
             try {
-                const url = `https://ondemeutimejoga.com.br/futebol/calendario-brasileirao-a?team_name=${time}`;
+                const url = `${url_base}/futebol/calendario-brasileirao-a?team_name=${time}`;
 
                 const response = await fetch(url, {
                     headers: {
@@ -185,12 +190,32 @@
             }
         }
 
+        async function fetchJogosCopaNordeste(time = '') {
+            try {
+                const url = `${url_base}/futebol/calendario-copa-nordeste?team_name=${time}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                }
+
+                const jogos = await response.json();
+                exibirJogosCopaNordeste(jogos);
+            } catch (error) {
+                console.error('Erro ao buscar os jogos da Copa do Nordeste:', error);
+            }
+        }
+
         function exibirJogosLibertadores(jogos) {
             const container = document.getElementById('jogosLibertadores');
             container.innerHTML = '';
 
             if (jogos.length === 0) {
-                container.innerHTML = '<p>Nenhum jogo encontrado para este time na Libertadores.</p>';
                 return;
             }
             container.innerHTML = '<h1 class="competicao">Libertadores</h1>';
@@ -230,7 +255,6 @@
             container.innerHTML = '';
 
             if (jogos.length === 0) {
-                container.innerHTML = '<p>Nenhum jogo encontrado para este time no Brasileirão.</p>';
                 return;
             }
             container.innerHTML = '<h1 class="competicao">Brasileirão Série A</h1>';
@@ -265,14 +289,56 @@
             });
         }
 
+        function exibirJogosCopaNordeste(jogos) {
+            const container = document.getElementById('jogosCopaNordeste');
+            container.innerHTML = '';
+
+            if (jogos.length === 0) {
+                return;
+            }
+            container.innerHTML = '<h1 class="competicao">Copa do Nordeste</h1>';
+            jogos.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo';
+
+                jogoDiv.innerHTML = `
+                    <h2>${jogo.Data}</h2>
+                    <p class="equipes">${jogo.Jogo}</p>
+                    <div class="info">
+                        <div>
+                            <span>Hora:</span>
+                            <p>${jogo.Hora}</p>
+                        </div>
+                        <div>
+                            <span>Estádio:</span>
+                            <p>${jogo.Estadio}</p>
+                        </div>
+                        <div>
+                            <span>Cidade:</span>
+                            <p>${jogo.Cidade}, ${jogo.UF}</p>
+                        </div>
+                        <div>
+                            <span>Onde assistir:</span>
+                            <p>${jogo.TV_1 || jogo.TV_2 || jogo.TV_3 || 'Não disponível'}</p>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(jogoDiv);
+            });
+        }
+
         // Adiciona um evento de input para filtrar automaticamente
         document.getElementById('filtroTime').addEventListener('input', (event) => {
             const time = event.target.value.trim();
+            fetchJogosCopaNordeste(time);
+
             fetchJogosBrasileirao(time);
             fetchJogosLibertadores(time);
         });
 
         // Carrega todos os jogos ao abrir a página
+        fetchJogosCopaNordeste();
         fetchJogosBrasileirao();
         fetchJogosLibertadores();
     </script>
