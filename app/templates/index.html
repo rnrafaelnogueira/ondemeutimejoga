@@ -10,135 +10,298 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-JEV74TTNMQ');
     </script>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --text-light: #7f8c8d;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
         body {
-            font-family: 'Poppins', sans-serif; /* Fonte moderna */
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-        .ad-container {
-            background: #ffffff; /* Fundo totalmente branco */
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            border: 2px solid #e0e0e0; /* Borda cinza bem clara para contorno */
-            border-radius: 10px;
-            color: #333333; /* Texto em cinza escuro para contraste */
-            font-family: 'Poppins', sans-serif; /* Fonte moderna */
-            font-size: 22px; /* Tamanho maior para impacto */
-            font-weight: 600; /* Peso semi-negrito */
+        
+        .container {
+            max-width: 100%;
+            padding: 0 15px;
+        }
+        
+        /* Header */
+        .site-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .site-title {
+            font-weight: 700;
+            margin: 0;
+            font-size: 2rem;
             text-transform: uppercase;
-            letter-spacing: 2px; /* Espaçamento entre letras */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            letter-spacing: 1px;
+        }
+        
+        .site-description {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--light-color);
+            margin: 0.8rem auto 0;
+            max-width: 800px;
+            opacity: 0.9;
+        }
+        
+        /* Anúncios */
+        .ad-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 1.5rem auto;
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e0e0e0;
+            max-width: 100%;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+        
+        /* Filtro */
+        .search-container {
+            margin: 2rem auto;
+            max-width: 600px;
             position: relative;
-            overflow: hidden;
         }
-        .descricao {
-            text-align: center;
-            font-size: 1em;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        .filtro {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .filtro input {
-            padding: 10px;
-            font-size: 26px;
+        
+        .search-input {
+            padding: 15px 25px;
+            font-size: 1.1rem;
             width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            font-family: 'Poppins', sans-serif;
         }
-        .jogo {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        
+        .search-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
-        .competicao {
-            font-size: 1.9em;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
         }
-        .competicao h1 {
-            align-items: center;
+        
+        /* Cards de Competições */
+        .competition-section {
+            margin: 3rem 0 1.5rem;
+        }
+        
+        .competition-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.8rem;
             text-align: center;
-            margin: 0;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
         }
-        .jogo h2 {
-            margin: 0;
-            color: #555;
+        
+        .competition-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--secondary-color);
         }
-        .jogo p {
-            margin: 5px 0;
-            color: #777;
+        
+        /* Cards de Jogos */
+        .match-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--secondary-color);
         }
-        .jogo .equipes {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
+        
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
-        .jogo .info {
+        
+        .match-date {
+            margin: 0 0 1rem;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .match-teams {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .match-teams .vs {
+            color: var(--secondary-color);
+            font-weight: 800;
+            margin: 0 5px;
+        }
+        
+        .match-info {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             width: 100%;
-            max-width: 500px;
-            margin-top: 10px;
+            gap: 1rem;
         }
-        .jogo .info div {
+        
+        .match-info-item {
             text-align: center;
-            flex: 1 1 45%;
-            margin: 5px 0;
+            flex: 1 1 160px;
+            min-width: 120px;
         }
-        .jogo .info div span {
-            font-weight: bold;
-            color: #333;
+        
+        .match-info-label {
+            display: block;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.3rem;
+            font-size: 1.2rem;
+        }
+        
+        .match-info-value {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        /* Mensagens de nenhum resultado */
+        .no-matches {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 1.6rem;
+            }
+            
+            .site-description {
+                font-size: 1rem;
+                padding: 0 15px;
+            }
+            
+            .match-info-item {
+                flex: 1 1 100%;
+            }
+            
+            .match-teams {
+                font-size: 1.2rem;
+            }
+            
+            .search-input {
+                font-size: 1rem;
+                padding: 12px 20px;
+            }
         }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9110858767534450"
     crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- Div para Google AdSense no topo -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
-
-    <div class="ad-container">ONDE MEU TIME JOGA</div>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <h1 class="site-title">Onde meu time joga</h1>
+            <p class="site-description">
+                Centralize os jogos do seu time favorito<br>
+                Brasileirão, Libertadores, Sul-Americana e Copa do Nordeste em um só lugar
+            </p>
+        </div>
+    </header>
 
     <div class="container">
-        <div class="descricao">
-            Este site centraliza informações sobre jogos da Libertadores, Copa Sulamericana, Brasileirão, Copa do Brasil e Copa do Nordeste.<br>
-            Busque seu time e veja data, horário, local e onde assistir aos jogos.
+        <!-- Anúncio Topo -->
+        <div class="ad-container">
+            <i class="fas fa-ad"></i> Espaço para anúncio
         </div>
-        <div class="filtro">
-            <input type="text" id="filtroTime" class="form-control" placeholder="Digite o nome do time...">
-        </div>
-        <div id="jogosBrasileirao"></div>
-        <div id="jogosLibertadores"></div>
-        <div id="jogosSudamericana"></div>
-        <div id="jogosCopaNordeste"></div>
 
+        <!-- Filtro -->
+        <div class="search-container">
+            <input type="text" id="filtroTime" class="search-input" placeholder="Digite o nome do seu time...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <!-- Área de Jogos -->
+        <div id="jogosBrasileirao" class="competition-section"></div>
+        <div id="jogosLibertadores" class="competition-section"></div>
+        <div id="jogosSudamericana" class="competition-section"></div>
+        <div id="jogosCopaNordeste" class="competition-section"></div>
+
+        <!-- Anúncio Rodapé -->
+        <div class="ad-container">
+            <i class="fas fa-ad"></i> Espaço para anúncio
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            © 2023 Onde meu time joga - Todos os direitos reservados
+        </footer>
     </div>
-
-    <!-- Div para Google AdSense no rodapé -->
-    <div class="ad-container"></div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -146,27 +309,15 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        
         const url_base = 'https://ondemeutimejoga.com.br'
         
-        /*const url_base = 'http://localhost:8000'*/
-
         async function fetchJogosLibertadores(time = '') {
             try {
                const url = `${url_base}/futebol/calendario-libertadores?team_name=${time}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        'accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
-                }
-
+                const response = await fetch(url, { headers: { 'accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
                 const jogos = await response.json();
-                exibirJogosLibertadores(jogos);
+                exibirJogos('jogosLibertadores', 'Libertadores', jogos);
             } catch (error) {
                 console.error('Erro ao buscar os jogos da Libertadores:', error);
             }
@@ -175,19 +326,10 @@
         async function fetchJogosSudamericana(time = '') {
             try {
                const url = `${url_base}/futebol/calendario-sudamericana?team_name=${time}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        'accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
-                }
-
+                const response = await fetch(url, { headers: { 'accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
                 const jogos = await response.json();
-                exibirJogosSudamericana(jogos);
+                exibirJogos('jogosSudamericana', 'Copa Sul-Americana', jogos);
             } catch (error) {
                 console.error('Erro ao buscar os jogos da Sudamericana:', error);
             }
@@ -196,19 +338,10 @@
         async function fetchJogosBrasileirao(time = '') {
             try {
                 const url = `${url_base}/futebol/calendario-brasileirao-a?team_name=${time}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        'accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
-                }
-
+                const response = await fetch(url, { headers: { 'accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
                 const jogos = await response.json();
-                exibirJogosBrasileirao(jogos);
+                exibirJogos('jogosBrasileirao', 'Brasileirão Série A', jogos);
             } catch (error) {
                 console.error('Erro ao buscar os jogos do Brasileirão:', error);
             }
@@ -217,175 +350,76 @@
         async function fetchJogosCopaNordeste(time = '') {
             try {
                 const url = `${url_base}/futebol/calendario-copa-nordeste?team_name=${time}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        'accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
-                }
-
+                const response = await fetch(url, { headers: { 'accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
                 const jogos = await response.json();
-                exibirJogosCopaNordeste(jogos);
+                exibirJogos('jogosCopaNordeste', 'Copa do Nordeste', jogos);
             } catch (error) {
                 console.error('Erro ao buscar os jogos da Copa do Nordeste:', error);
             }
         }
 
-        function exibirJogosLibertadores(jogos) {
-            const container = document.getElementById('jogosLibertadores');
+        function exibirJogos(containerId, competitionName, jogos) {
+            const container = document.getElementById(containerId);
             container.innerHTML = '';
 
             if (jogos.length === 0) {
                 return;
             }
-            container.innerHTML = '<h1 class="competicao">Libertadores</h1>';
+            
+            container.innerHTML = `<h2 class="competition-title">${competitionName}</h2>`;
+            
             jogos.forEach(jogo => {
                 const jogoDiv = document.createElement('div');
-                jogoDiv.className = 'jogo';
+                jogoDiv.className = 'match-card';
 
-                jogoDiv.innerHTML = `
-                    <h2> ${jogo.Fecha} - ${jogo.Dia}</h2>
-                    <p class="equipes">${jogo.Equipo_A} x ${jogo.Equipo_B}</p>
-                    <div class="info">
-                        <div>
-                            <span>Hora:</span>
-                            <p>${jogo.Hora_BRA}</p>
+                if (competitionName === 'Brasileirão Série A' || competitionName === 'Copa do Nordeste') {
+                    jogoDiv.innerHTML = `
+                        <div class="match-date">${jogo.Data}</div>
+                        <div class="match-teams">${jogo.Jogo.replace(' x ', ' <span class="vs">vs</span> ')}</div>
+                        <div class="match-info">
+                            <div class="match-info-item">
+                                <span class="match-info-label">Hora</span>
+                                <p class="match-info-value">${jogo.Hora}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Estádio</span>
+                                <p class="match-info-value">${jogo.Estadio}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Cidade</span>
+                                <p class="match-info-value">${jogo.Cidade}, ${jogo.UF}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Onde assistir</span>
+                                <p class="match-info-value">${jogo.TV_1 || jogo.TV_2 || jogo.TV_3 || jogo.TV_4 || jogo.TV_5 || jogo.TV_6 || 'Não disponível'}</p>
+                            </div>
                         </div>
-                        <div>
-                            <span>Estádio:</span>
-                            <p>${jogo.Estadio}</p>
+                    `;
+                } else {
+                    jogoDiv.innerHTML = `
+                        <div class="match-date">${jogo.Fecha} - ${jogo.Dia}</div>
+                        <div class="match-teams">${jogo.Equipo_A} <span class="vs">vs</span> ${jogo.Equipo_B}</div>
+                        <div class="match-info">
+                            <div class="match-info-item">
+                                <span class="match-info-label">Hora</span>
+                                <p class="match-info-value">${jogo.Hora_BRA}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Estádio</span>
+                                <p class="match-info-value">${jogo.Estadio}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Cidade</span>
+                                <p class="match-info-value">${jogo.Ciudad}</p>
+                            </div>
+                            <div class="match-info-item">
+                                <span class="match-info-label">Onde assistir</span>
+                                <p class="match-info-value">${jogo.Cable_1}</p>
+                            </div>
                         </div>
-                        <div>
-                            <span>Cidade:</span>
-                            <p>${jogo.Ciudad}</p>
-                        </div>
-                        <div>
-                            <span>Onde assistir:</span>
-                            <p>${jogo.Cable_1}</p>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(jogoDiv);
-            });
-        }
-
-        function exibirJogosSudamericana(jogos) {
-            const container = document.getElementById('jogosSudamericana');
-            container.innerHTML = '';
-
-            if (jogos.length === 0) {
-                return;
-            }
-            container.innerHTML = '<h1 class="competicao">Copa Sul-Americana</h1>';
-            jogos.forEach(jogo => {
-                const jogoDiv = document.createElement('div');
-                jogoDiv.className = 'jogo';
-
-                jogoDiv.innerHTML = `
-                    <h2> ${jogo.Fecha} - ${jogo.Dia}</h2>
-                    <p class="equipes">${jogo.Equipo_A} x ${jogo.Equipo_B}</p>
-                    <div class="info">
-                        <div>
-                            <span>Hora:</span>
-                            <p>${jogo.Hora_BRA}</p>
-                        </div>
-                        <div>
-                            <span>Estádio:</span>
-                            <p>${jogo.Estadio}</p>
-                        </div>
-                        <div>
-                            <span>Cidade:</span>
-                            <p>${jogo.Ciudad}</p>
-                        </div>
-                        <div>
-                            <span>Onde assistir:</span>
-                            <p>${jogo.Cable_1}</p>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(jogoDiv);
-            });
-        }
-
-        function exibirJogosBrasileirao(jogos) {
-            const container = document.getElementById('jogosBrasileirao');
-            container.innerHTML = '';
-
-            if (jogos.length === 0) {
-                return;
-            }
-            container.innerHTML = '<h1 class="competicao">Brasileirão Série A</h1>';
-            jogos.forEach(jogo => {
-                const jogoDiv = document.createElement('div');
-                jogoDiv.className = 'jogo';
-
-                jogoDiv.innerHTML = `
-                    <h2>${jogo.Data}</h2>
-                    <p class="equipes">${jogo.Jogo}</p>
-                    <div class="info">
-                        <div>
-                            <span>Hora:</span>
-                            <p>${jogo.Hora}</p>
-                        </div>
-                        <div>
-                            <span>Estádio:</span>
-                            <p>${jogo.Estadio}</p>
-                        </div>
-                        <div>
-                            <span>Cidade:</span>
-                            <p>${jogo.Cidade}, ${jogo.UF}</p>
-                        </div>
-                        <div>
-                            <span>Onde assistir:</span>
-                            <p>${jogo.TV_1 || jogo.TV_2 || jogo.TV_3 || jogo.TV_4 || jogo.TV_5 || jogo.TV_6 || 'Não disponível'}</p>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(jogoDiv);
-            });
-        }
-
-        function exibirJogosCopaNordeste(jogos) {
-            const container = document.getElementById('jogosCopaNordeste');
-            container.innerHTML = '';
-
-            if (jogos.length === 0) {
-                return;
-            }
-            container.innerHTML = '<h1 class="competicao">Copa do Nordeste</h1>';
-            jogos.forEach(jogo => {
-                const jogoDiv = document.createElement('div');
-                jogoDiv.className = 'jogo';
-
-                jogoDiv.innerHTML = `
-                    <h2>${jogo.Data}</h2>
-                    <p class="equipes">${jogo.Jogo}</p>
-                    <div class="info">
-                        <div>
-                            <span>Hora:</span>
-                            <p>${jogo.Hora}</p>
-                        </div>
-                        <div>
-                            <span>Estádio:</span>
-                            <p>${jogo.Estadio}</p>
-                        </div>
-                        <div>
-                            <span>Cidade:</span>
-                            <p>${jogo.Cidade}, ${jogo.UF}</p>
-                        </div>
-                        <div>
-                            <span>Onde assistir:</span>
-                            <p>${jogo.TV_1 || jogo.TV_2 || jogo.TV_3 || 'Não disponível'}</p>
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
 
                 container.appendChild(jogoDiv);
             });
@@ -398,7 +432,6 @@
             fetchJogosBrasileirao(time);
             fetchJogosLibertadores(time);
             fetchJogosSudamericana(time);
-
         });
 
         // Carrega todos os jogos ao abrir a página
