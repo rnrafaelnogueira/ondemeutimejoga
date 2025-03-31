@@ -1,14 +1,14 @@
 import pdfplumber
 import duckdb
 from typing import List, Dict
-from fuzzywuzzy import fuzz  # Importando a biblioteca para calcular similaridade
+from fuzzywuzzy import fuzz
+from datetime import datetime  # Adicionado para manipulação de datas
 
 class FutebolCopaNordesteService:
 
     def __init__(self, db_path):
         self.db_path = db_path
 
-    # Função para transformar a string
     def transformar_data(self, data_str):
         dias_semana = {
             'dom': 'Domingo',
@@ -19,14 +19,16 @@ class FutebolCopaNordesteService:
             'sex': 'Sexta',
             'sáb': 'Sábado'
         }
-        # Divide a string em data e dia da semana
-        data, dia_abreviado = data_str.split()
         
-        # Obtém o nome completo do dia da semana
-        dia_completo = dias_semana.get(dia_abreviado, dia_abreviado)  # Usa a abreviação se não encontrar no dicionário
-        
-        # Retorna a string formatada
-        return f"{data} - {dia_completo}"
+        if not data_str:
+            return None
+            
+        try:
+            data, dia_abreviado = data_str.split()
+            dia_completo = dias_semana.get(dia_abreviado, dia_abreviado)
+            return f"{data} - {dia_completo}"
+        except:
+            return None
 
     def extract_data_from_pdf(self, pdf_path) -> List[Dict[str, str]]:
         """Extrai os dados do PDF e retorna uma lista de dicionários."""
@@ -34,19 +36,16 @@ class FutebolCopaNordesteService:
         try:
             with pdfplumber.open(pdf_path) as pdf:
                 for page in pdf.pages:
-                    # Extrai a tabela da página
                     table = page.extract_table()
                     
                     if table:
-                        # Remove a primeira linha (cabeçalho)
-                        table = table[1:]
+                        table = table[1:]  # Remove cabeçalho
                         
-                        # Processa cada linha da tabela
                         for row in table:
-                            if len(row) >= 12:  # Verifica se a linha tem colunas suficientes
+                            if len(row) >= 13:  # Verifica colunas suficientes (índice 12 para TV_3)
                                 record = {
-                                    "Data": row[2] if row[2] else None,  
-                                    "Hora": row[4] if row[4] else None,  
+                                    "Data": row[2] if row[2] else None,
+                                    "Hora": row[4] if row[4] else None,
                                     "Jogo": row[6] if row[6] else None,
                                     "Estadio": row[7] if row[7] else None,
                                     "Cidade": row[8] if row[8] else None,
@@ -64,9 +63,12 @@ class FutebolCopaNordesteService:
         """Salva os dados extraídos no banco de dados DuckDB."""
         try:
             conn = duckdb.connect(self.db_path)
-            conn.execute(f"CREATE SEQUENCE IF NOT EXISTS {table_name}_seq")
+            
+            # Limpa a tabela existente se necessário
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+            
             conn.execute(f"""
-                CREATE TABLE IF NOT EXISTS {table_name} (
+                CREATE TABLE {table_name} (
                     Data TEXT,
                     Hora TEXT,
                     Jogo TEXT,
@@ -78,56 +80,69 @@ class FutebolCopaNordesteService:
                     TV_3 TEXT
                 )
             """)
-            # Insere cada registro na tabela
+            
             for record in data:
                 conn.execute(f"""
-                    INSERT INTO {table_name} (
-                       Data, Hora, Jogo, Estadio, Cidade, UF, TV_1,TV_2,TV_3
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO {table_name} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
-                    record["Data"], record["Hora"], record["Jogo"], record["Estadio"], record["Cidade"], record["UF"],
+                    record["Data"], record["Hora"], record["Jogo"], 
+                    record["Estadio"], record["Cidade"], record["UF"],
                     record["TV_1"], record["TV_2"], record["TV_3"]
                 ))
             conn.close()
         except Exception as e:
             raise Exception(f"Erro ao salvar dados no DuckDB: {str(e)}")
 
+    def parse_date(self, date_str):
+        """Converte a string de data no formato 'DD/MM - dia' para um objeto datetime."""
+        if not date_str:
+            return None
+            
+        try:
+            date_part = date_str.split(" - ")[0]  # Pega apenas "DD/MM"
+            day, month = date_part.split('/')
+            current_year = datetime.now().year
+            return datetime.strptime(f"{day}/{month}/{current_year}", "%d/%m/%Y")
+        except:
+            return None
+
     def get_all_texts(self, table_name, team_name: str = None, similarity_threshold: int = 60) -> List[Dict[str, str]]:
         """
         Retorna todos os registros da tabela como uma lista de dicionários.
         Se `team_name` for fornecido, filtra os registros com base na similaridade dos nomes das equipes.
+        Retorna apenas jogos a partir da data atual.
         """
         try:
             conn = duckdb.connect(self.db_path)
-            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora<>'HORA'").fetchall()
+            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora <> 'HORA'").fetchall()
             conn.close()
 
-            # Converte os registros em dicionários
-            columns = [
-                "Data", "Hora", "Jogo", "Estadio", "Cidade", "UF", "TV_1", "TV_2", "TV_3"
-            ]
+            columns = ["Data", "Hora", "Jogo", "Estadio", "Cidade", "UF", "TV_1", "TV_2", "TV_3"]
             data = [dict(zip(columns, row)) for row in result]
 
-            # Mapeamento dos canais de TV
             tv_mapping = {
                 "1": "SBT",
                 "2": "Premiere",
                 "3": "ESPN"
             }
 
-            # Filtra os dados com base na similaridade do nome da equipe, se fornecido
+            today = datetime.now().date()
             filtered_data = []
-            last_data = None  # Variável para armazenar a última data válida
+            last_valid_date = None
 
             for record in data:
-                # Formata o campo "Data" para replicar o valor anterior se for null
+                # Processa a data
                 if record["Data"]:
-                    # Atualiza a última data válida
-                    last_data = record["Data"].split("\n")[0]  # Pega a primeira ocorrência da data
-                    record["Data"] = self.transformar_data(last_data)
+                    raw_date = record["Data"].split("\n")[0]
+                    last_valid_date = self.transformar_data(raw_date)
+                    record["Data"] = last_valid_date
                 else:
-                    # Replica a última data válida
-                    record["Data"] = self.transformar_data(last_data)
+                    record["Data"] = last_valid_date
+
+                # Verifica se a data é válida e é hoje ou no futuro
+                parsed_date = self.parse_date(record["Data"])
+                if not parsed_date or parsed_date.date() < today:
+                    continue
 
                 # Mapeia os canais de TV
                 for tv_key in ["TV_1", "TV_2", "TV_3"]:
@@ -138,7 +153,6 @@ class FutebolCopaNordesteService:
                 if team_name:
                     jogo = record.get("Jogo", "")
                     if jogo:
-                        # Calcula a similaridade entre o nome da equipe e o campo "Jogo"
                         similarity = fuzz.partial_ratio(team_name.lower(), jogo.lower())
                         if similarity >= similarity_threshold:
                             filtered_data.append(record)
