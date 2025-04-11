@@ -137,9 +137,9 @@ class FutebolLibertadoresService:
                     fecha_str = record["Fecha"] + f"/{today.year}"
                     fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
 
-                    # Verifica se a data está dentro dos próximos 15 dias
-                    if today <= fecha <= fifteen_days_later:
+                    if today.date() <= fecha.date() <= fifteen_days_later.date():
                         record["Dia"] = self.transformar_data(record["Dia"].split("/")[1])
+                        # Combina os campos de TV
                         if record["Abierta_1"] and record["Cable_1"]:
                             record["Cable_1"] = f"{record['Abierta_1']} / {record['Cable_1']}"
                         elif record["Abierta_1"]:
@@ -147,16 +147,79 @@ class FutebolLibertadoresService:
                         elif record["Cable_1"]:
                             record["Cable_1"] = record["Cable_1"]
                         if team_name:
-                            # Calcula a similaridade entre o nome da equipe A e o nome fornecido
                             similarity_a = fuzz.ratio(record["Equipo_A"].lower(), team_name.lower())
-                            # Calcula a similaridade entre o nome da equipe B e o nome fornecido
                             similarity_b = fuzz.ratio(record["Equipo_B"].lower(), team_name.lower())
-                            # Se a similaridade for maior ou igual ao limite, adiciona ao resultado filtrado
                             if similarity_a >= similarity_threshold or similarity_b >= similarity_threshold:
                                 filtered_data.append(record)
                         else:
                             filtered_data.append(record)
 
+            return filtered_data
+        except Exception as e:
+            raise Exception(f"Erro ao recuperar dados do DuckDB: {str(e)}")
+    
+
+    def get_all_texts(self, table_name, team_name: str = None, similarity_threshold: int = 60, days_limit: int = 30) -> List[Dict[str, str]]:
+        """
+        Retorna todos os registros da tabela como uma lista de dicionários.
+        Se `team_name` for fornecido, filtra os registros com base na similaridade dos nomes das equipes.
+        Retorna apenas jogos das datas anteriores ao dia atual, limitado a um número específico de dias (padrão: 30).
+        """
+        try:
+            conn = duckdb.connect(self.db_path)
+            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora <> 'HORA'").fetchall()
+            conn.close()
+
+            columns = ["Data", "Hora", "Jogo", "Estadio", "Cidade", "UF", "TV_1", "TV_2", "TV_3"]
+            data = [dict(zip(columns, row)) for row in result]
+
+            tv_mapping = {
+                "1": "SBT",
+                "2": "Premiere",
+                "3": "ESPN"
+            }
+
+            today = datetime.now().date()
+            filtered_data = []
+            last_valid_date = None
+            days_limit_date = today - timedelta(days=days_limit)
+
+            for record in data:
+                # Processa a data
+                if record["Data"]:
+                    raw_date = record["Data"].split("\n")[0]
+                    last_valid_date = self.transformar_data(raw_date)
+                    record["Data"] = last_valid_date
+                else:
+                    record["Data"] = last_valid_date
+
+                # Verifica se a data é válida e está dentro do período (hoje - days_limit até ontem)
+                parsed_date = self.parse_date(record["Data"])
+                if not parsed_date:
+                    continue
+                    
+                record_date = parsed_date.date()
+                if not (days_limit_date <= record_date < today):
+                    continue
+
+                # Mapeia os canais de TV
+                for tv_key in ["TV_1", "TV_2", "TV_3"]:
+                    if record[tv_key] in tv_mapping:
+                        record[tv_key] = tv_mapping[record[tv_key]]
+
+                # Filtra por similaridade do nome da equipe
+                if team_name:
+                    jogo = record.get("Jogo", "")
+                    if jogo:
+                        similarity = fuzz.partial_ratio(team_name.lower(), jogo.lower())
+                        if similarity >= similarity_threshold:
+                            filtered_data.append(record)
+                else:
+                    filtered_data.append(record)
+
+            # Ordena os resultados por data (do mais recente para o mais antigo)
+            filtered_data.sort(key=lambda x: self.parse_date(x["Data"]), reverse=True)
+            
             return filtered_data
         except Exception as e:
             raise Exception(f"Erro ao recuperar dados do DuckDB: {str(e)}")

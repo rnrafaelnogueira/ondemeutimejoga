@@ -134,7 +134,7 @@ class FutebolSudamericanaService:
                     fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
 
                     # Verifica se a data está dentro dos próximos 15 dias
-                    if today <= fecha <= fifteen_days_later:
+                    if today.date() <= fecha.date() <= fifteen_days_later.date():
                         record["Dia"] = self.transformar_data(record["Dia"].split("/")[1])
                         if record["Abierta_1"] and record["Cable_1"]:
                             record["Cable_1"] = f"{record['Abierta_1']} / {record['Cable_1']}"
