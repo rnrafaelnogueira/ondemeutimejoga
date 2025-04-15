@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from app.routes import example, futebol
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
@@ -9,6 +10,8 @@ app = FastAPI(
     redoc_url=None,       # Remove o ReDoc (default: "/redoc")
     openapi_url=None      # Remove o OpenAPI JSON schema (default: "/openapi.json")
 )
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Configuração do CORS
 app.add_middleware(
