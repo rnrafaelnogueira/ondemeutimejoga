@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from app.routes import example, futebol
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI(
@@ -29,3 +29,11 @@ templates = Jinja2Templates(directory="app/templates")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+# Rota para o ads.txt
+@app.get("/ads.txt", response_class=PlainTextResponse)
+async def serve_ads_txt():
+    ads_txt_content = """
+    google.com, pub-9110858767534450, DIRECT, f08c47fec0942fa0
+    """
+    return ads_txt_content.strip()
