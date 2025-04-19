@@ -104,7 +104,7 @@ class FutebolSudamericanaService:
         except Exception as e:
             raise Exception(f"Erro ao salvar dados no DuckDB: {str(e)}")
 
-    def get_all_texts(self, table_name, team_name: str = None, similarity_threshold: int = 60) -> List[Dict[str, str]]:
+    def get_all_texts(self, table_name, team_name: str = None, similarity_threshold: int = 80) -> List[Dict[str, str]]:
         """
         Retorna todos os registros da tabela como uma lista de dicionários.
         Se `team_name` for fornecido, filtra os registros com base na similaridade dos nomes das equipes.
