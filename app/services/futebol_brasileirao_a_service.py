@@ -116,7 +116,7 @@ class FutebolBrasileiraoAService:
         """
         try:
             conn = duckdb.connect(self.db_path)
-            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora <> 'HORA' LIMIT 39").fetchall()
+            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora <> 'HORA' LIMIT 40").fetchall()
             conn.close()
 
             columns = [
