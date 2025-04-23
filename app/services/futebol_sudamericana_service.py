@@ -53,9 +53,9 @@ class FutebolSudamericanaService:
                                     "Hora_Local": row[6] if row[6] else None,  # 19:00
                                     "GMT": row[7] if row[7] else None,  # 22:00
                                     "Hora_BRA": row[8] if row[8] else None,  # 19:00
-                                    "Equipo_A": row[9] if row[9] else None,  # Cerro Porteño (PAR)
+                                    "Equipo_A": row[9].replace('(BRA)', '') if row[9] else None,  # Cerro Porteño (PAR)
                                     "Versos": row[10] if row[10] else None,  # vs
-                                    "Equipo_B": row[11] if row[11] else None,  # Bolívar (BOL)
+                                    "Equipo_B": row[11].replace('(BRA)', '') if row[11] else None,  # Bolívar (BOL)
                                     "Grupo": row[12] if row[12] else None,  # Grupo G
                                     "Cable_1": row[13] if row[13] else None,  # Paramount
                                     "Abierta_1": row[14] if row[14] else None,  # ESPN / Disney+ 

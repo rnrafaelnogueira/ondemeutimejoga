@@ -32,7 +32,7 @@ class FutebolBrasileiraoAService:
         data = []
         try:
             with pdfplumber.open(pdf_path) as pdf:
-                for page in pdf.pages:
+                for page in pdf.pages[1:]:
                     table = page.extract_table()
                     
                     if table:
@@ -42,17 +42,17 @@ class FutebolBrasileiraoAService:
                             if len(row) >= 14:
                                 record = {
                                     "Data": row[2] if row[2] else None,
-                                    "Hora": row[3] if row[3] else None,
-                                    "Jogo": row[4] if row[4] else None,
-                                    "Estadio": row[5] if row[5] else None,
-                                    "Cidade": row[6] if row[6] else None,
-                                    "UF": row[7] if row[7] else None,
-                                    "TV_1": row[8] if row[8] else None,
-                                    "TV_2": row[9] if row[9] else None,
-                                    "TV_3": row[10] if row[10] else None,
-                                    "TV_4": row[11] if row[11] else None,
-                                    "TV_5": row[12] if row[12] else None,
-                                    "TV_6": row[13] if row[13] else None,
+                                    "Hora": row[4] if row[4] else None,
+                                    "Jogo": row[5] if row[5] else None,
+                                    "Estadio": row[6] if row[6] else None,
+                                    "Cidade": row[7] if row[7] else None,
+                                    "UF": row[8] if row[8] else None,
+                                    "TV_1": row[9] if row[9] else None,
+                                    "TV_2": row[10] if row[10] else None,
+                                    "TV_3": row[11] if row[11] else None,
+                                    "TV_4": row[12] if row[12] else None,
+                                    "TV_5": row[13] if row[13] else None,
+                                    "TV_6": row[14] if row[14] else None,
                                 }
                                 data.append(record)
             return data
@@ -116,7 +116,7 @@ class FutebolBrasileiraoAService:
         """
         try:
             conn = duckdb.connect(self.db_path)
-            result = conn.execute(f"SELECT * FROM {table_name} WHERE Hora <> 'HORA' LIMIT 40").fetchall()
+            result = conn.execute(f"SELECT * FROM {table_name} WHERE (Hora <> 'HORA') LIMIT 42").fetchall()
             conn.close()
 
             columns = [
