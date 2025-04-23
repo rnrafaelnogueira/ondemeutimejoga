@@ -270,7 +270,7 @@
             <img src="static/logo-ondemeutimejoga.png" alt="Logo Onde Meu Time Joga" style="max-width: 200px; margin-bottom: 1rem;">
             <p class="site-description">
                 Descubra onde o seu time joga e onde vai passar no
-                Brasileirão, Libertadores, Sul-Americana e Copa do Nordeste
+                Brasileirão, Libertadores, Sul-Americana, Copa do Brasil e Copa do Nordeste
             </p>
         </div>
     </header>
@@ -285,6 +285,7 @@
 
         <!-- Área de Jogos -->
         <div id="jogosBrasileirao" class="competition-section"></div>
+        <div id="jogosCopaBrasil" class="competition-section"></div>
         <div id="jogosLibertadores" class="competition-section"></div>
         <div id="jogosSudamericana" class="competition-section"></div>
         <div id="jogosCopaNordeste" class="competition-section"></div>
@@ -303,7 +304,19 @@
 
     <script>
         const url_base = 'https://ondemeutimejoga.com.br'
-        
+
+        async function fetchJogosCopaBrasil(time = '') {
+            try {
+               const url = `${url_base}/futebol/calendario-copa-brasil?team_name=${time}`;
+                const response = await fetch(url, { headers: { 'accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                const jogos = await response.json();
+                exibirJogos('jogosCopaBrasil', 'Copa do Brasil', jogos);
+            } catch (error) {
+                console.error('Erro ao buscar os jogos da Copa do Brasil:', error);
+            }
+        }
+
         async function fetchJogosLibertadores(time = '') {
             try {
                const url = `${url_base}/futebol/calendario-libertadores?team_name=${time}`;
@@ -366,7 +379,7 @@
                 const jogoDiv = document.createElement('div');
                 jogoDiv.className = 'match-card';
 
-                if (competitionName === 'Brasileirão Série A' || competitionName === 'Copa do Nordeste') {
+                if (competitionName === 'Brasileirão Série A' || competitionName === 'Copa do Nordeste' || competitionName === 'Copa do Brasil') {
                     jogoDiv.innerHTML = `
                         <div class="match-date">${jogo.Data}</div>
                         <div class="match-teams">${jogo.Jogo.replace(' x ', ' <span class="vs">vs</span> ')}</div>
@@ -423,6 +436,7 @@
             const time = event.target.value.trim();
             fetchJogosCopaNordeste(time);
             fetchJogosBrasileirao(time);
+            fetchJogosCopaBrasil(time);
             fetchJogosLibertadores(time);
             fetchJogosSudamericana(time);
         });
@@ -430,6 +444,7 @@
         // Carrega todos os jogos ao abrir a página
         fetchJogosCopaNordeste();
         fetchJogosBrasileirao();
+        fetchJogosCopaBrasil();
         fetchJogosLibertadores();
         fetchJogosSudamericana();
     </script>
